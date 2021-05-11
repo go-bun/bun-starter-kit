@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"sync"
 	"sync/atomic"
 	"syscall"
@@ -55,6 +56,11 @@ func (app *App) Config() *AppConfig {
 	return app.cfg
 }
 
+func (app *App) Path(ss ...string) string {
+	ss = append([]string{app.cfg.AppDir}, ss...)
+	return filepath.Join(ss...)
+}
+
 func (app *App) Running() bool {
 	return !app.Stopping()
 }
@@ -104,6 +110,10 @@ func Context() context.Context {
 
 func Config() *AppConfig {
 	return TheApp.Config()
+}
+
+func Path(ss ...string) string {
+	return TheApp.Path(ss...)
 }
 
 func Running() bool {

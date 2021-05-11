@@ -25,7 +25,7 @@ type WelcomeHandler struct {
 }
 
 func NewWelcomeHandler(app *app.App) *WelcomeHandler {
-	tpl, err := template.New("").ParseGlob("example/templates/*.html")
+	tpl, err := template.New("").ParseGlob(app.Path("example", "templates", "*.html"))
 	if err != nil {
 		panic(err)
 	}

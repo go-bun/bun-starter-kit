@@ -2,12 +2,14 @@ package example_test
 
 import (
 	"context"
+	"net/http/httptest"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun-starter-kit/app"
 	"github.com/uptrace/bun-starter-kit/example"
+	"github.com/uptrace/bun-starter-kit/testbed"
 	"github.com/uptrace/bun/fixture"
 )
 
@@ -59,6 +61,19 @@ func TestOrg(t *testing.T) {
 		Scan(ctx)
 	require.NoError(t, err)
 	require.Equal(t, *org, *myorg)
+}
+
+func TestHandler(t *testing.T) {
+	app := startTestApp(t)
+	defer app.Close()
+
+	handler := example.NewWelcomeHandler(app.App)
+
+	req := testbed.NewRequest("GET", "/", nil)
+	resp := httptest.NewRecorder()
+	err := handler.Welcome(resp, req)
+	require.NoError(t, err)
+	require.Contains(t, resp.Body.String(), "Welcome")
 }
 
 type App struct {
