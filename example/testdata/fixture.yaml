@@ -1,0 +1,15 @@
+- model: User
+  rows:
+    - _id: test
+      name: test user
+    - _id: another
+      name: another user
+
+- model: Org
+  rows:
+    - _id: my_org
+      name: My Org
+      owner_id: "{{ $.User.test.ID }}"
+    - _id: another_org
+      name: Another Org
+      owner_id: "{{ $.User.another.ID }}"

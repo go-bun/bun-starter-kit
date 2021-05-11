@@ -1,0 +1,4 @@
+debug: true
+
+pgx:
+  dsn: postgres://postgres:postgres@localhost:5432/bun_dev?sslmode=disable
