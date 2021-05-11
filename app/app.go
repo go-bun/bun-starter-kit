@@ -94,7 +94,7 @@ func (app *App) DB() *bun.DB {
 		db := bun.Open(sqldb, pgdialect.New())
 		// db.AddQueryHook(pgotel.TracingHook{})
 		if app.IsDebug() {
-			db.AddQueryHook(bundebug.NewQueryHook())
+			db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose()))
 		}
 
 		app.db = db
@@ -102,7 +102,7 @@ func (app *App) DB() *bun.DB {
 	return app.db
 }
 
-//------------------------------------------------------------------------------0
+//------------------------------------------------------------------------------
 
 func Context() context.Context {
 	return TheApp.Context()
