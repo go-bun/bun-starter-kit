@@ -18,7 +18,7 @@ func (app *App) initRouter() {
 	if app.IsDebug() {
 		opts = append(opts, treemux.WithMiddleware(reqlog.NewMiddleware()))
 	}
-	opts = append(opts, treemux.WithMiddleware(errorHandler))
+	opts = append(opts, treemux.WithMiddleware(app.errorHandler))
 
 	app.router = treemux.New(opts...)
 	app.apiRouter = app.router.NewGroup("/api",
@@ -26,14 +26,14 @@ func (app *App) initRouter() {
 	)
 }
 
-func errorHandler(next treemux.HandlerFunc) treemux.HandlerFunc {
+func (app *App) errorHandler(next treemux.HandlerFunc) treemux.HandlerFunc {
 	return func(w http.ResponseWriter, req treemux.Request) error {
 		err := next(w, req)
 		if err == nil {
 			return nil
 		}
 
-		httpErr := httperror.From(err, IsDebug())
+		httpErr := httperror.From(err, app.IsDebug())
 		if httpErr.Status != 0 {
 			w.WriteHeader(httpErr.Status)
 		}

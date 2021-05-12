@@ -2,12 +2,14 @@ package app
 
 import (
 	"context"
+	"math/rand"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"sync"
 	"sync/atomic"
 	"syscall"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/stdlib"
@@ -16,8 +18,6 @@ import (
 	"github.com/uptrace/bun/extra/bundebug"
 	"github.com/vmihailenco/treemux"
 )
-
-var TheApp *App
 
 type App struct {
 	ctx context.Context
@@ -44,8 +44,24 @@ func New(ctx context.Context, cfg *AppConfig) *App {
 	return app
 }
 
-func (app *App) Close() error {
-	return nil
+func Start(ctx context.Context, service, envName string) error {
+	cfg, err := ReadConfig(service, envName)
+	if err != nil {
+		return err
+	}
+	return StartConfig(ctx, cfg)
+}
+
+func StartConfig(ctx context.Context, cfg *AppConfig) error {
+	rand.Seed(time.Now().UnixNano())
+
+	app := New(ctx, cfg)
+	return onStart.Run(ctx, app)
+}
+
+func (app *App) Stop() {
+	_ = onStop.Run(app.ctx, app)
+	_ = onAfterStop.Run(app.ctx, app)
 }
 
 func (app *App) Context() context.Context {
@@ -103,42 +119,6 @@ func (app *App) DB() *bun.DB {
 }
 
 //------------------------------------------------------------------------------
-
-func Context() context.Context {
-	return TheApp.Context()
-}
-
-func Config() *AppConfig {
-	return TheApp.Config()
-}
-
-func Path(ss ...string) string {
-	return TheApp.Path(ss...)
-}
-
-func Running() bool {
-	return TheApp.Running()
-}
-
-func Stopping() bool {
-	return TheApp.Stopping()
-}
-
-func Router() *treemux.Router {
-	return TheApp.Router()
-}
-
-func APIRouter() *treemux.Group {
-	return TheApp.APIRouter()
-}
-
-func DB() *bun.DB {
-	return TheApp.DB()
-}
-
-func IsDebug() bool {
-	return TheApp.IsDebug()
-}
 
 func WaitExitSignal() os.Signal {
 	ch := make(chan os.Signal, 3)

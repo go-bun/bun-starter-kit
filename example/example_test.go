@@ -17,7 +17,7 @@ var ctx = context.Background()
 
 func TestUsers(t *testing.T) {
 	app := startTestApp(t)
-	defer app.Close()
+	defer app.Stop()
 
 	var users []example.User
 	err := app.DB().NewSelect().
@@ -32,7 +32,7 @@ func TestUsers(t *testing.T) {
 
 func TestOrgs(t *testing.T) {
 	app := startTestApp(t)
-	defer app.Close()
+	defer app.Stop()
 
 	var orgs []example.Org
 	err := app.DB().NewSelect().
@@ -50,7 +50,7 @@ func TestOrgs(t *testing.T) {
 
 func TestOrg(t *testing.T) {
 	app := startTestApp(t)
-	defer app.Close()
+	defer app.Stop()
 
 	myorg := app.fixture.MustGet("Org", "my_org").(*example.Org)
 
@@ -65,7 +65,7 @@ func TestOrg(t *testing.T) {
 
 func TestHandler(t *testing.T) {
 	app := startTestApp(t)
-	defer app.Close()
+	defer app.Stop()
 
 	handler := example.NewWelcomeHandler(app.App)
 

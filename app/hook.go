@@ -9,6 +9,29 @@ import (
 	"go4.org/syncutil"
 )
 
+var onStart appHooks
+
+func OnStart(name string, fn HookFunc) {
+	onStart.Add(newHook(name, fn))
+}
+
+//------------------------------------------------------------------------------
+
+var (
+	onStop      appHooks
+	onAfterStop appHooks
+)
+
+func OnStop(name string, fn HookFunc) {
+	onStop.Add(newHook(name, fn))
+}
+
+func OnAfterStop(name string, fn HookFunc) {
+	onAfterStop.Add(newHook(name, fn))
+}
+
+//------------------------------------------------------------------------------
+
 type HookFunc func(ctx context.Context, app *App) error
 
 type appHooks struct {
