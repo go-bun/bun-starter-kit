@@ -112,6 +112,16 @@ var dbCommand = &cli.Command{
 			},
 		},
 		{
+			Name:  "lock",
+			Usage: "lock migrations",
+			Action: func(c *cli.Context) error {
+				app, migrator := migrator(c)
+				defer app.Stop()
+
+				return migrator.Lock(c.Context, app.DB())
+			},
+		},
+		{
 			Name:  "unlock",
 			Usage: "unlock migrations",
 			Action: func(c *cli.Context) error {
@@ -123,7 +133,7 @@ var dbCommand = &cli.Command{
 		},
 		{
 			Name:  "create_go",
-			Usage: "create a Go migration",
+			Usage: "create Go migration",
 			Action: func(c *cli.Context) error {
 				app, migrator := migrator(c)
 				defer app.Stop()
@@ -133,7 +143,7 @@ var dbCommand = &cli.Command{
 		},
 		{
 			Name:  "create_sql",
-			Usage: "create a SQL migration",
+			Usage: "create SQL migration",
 			Action: func(c *cli.Context) error {
 				app, migrator := migrator(c)
 				defer app.Stop()
