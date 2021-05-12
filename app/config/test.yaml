@@ -1,4 +1,4 @@
 debug: true
 
-pgx:
-  dsn: postgres://postgres:postgres@localhost:5432/bun_test?sslmode=disable
+db:
+  dsn: file:test.db?cache=shared&mode=memory

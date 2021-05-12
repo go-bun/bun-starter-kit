@@ -17,9 +17,9 @@ type AppConfig struct {
 	Debug     bool   `yaml:"debug"`
 	SecretKey string `yaml:"secret_key"`
 
-	PGX struct {
+	DB struct {
 		DSN string `yaml:"dsn"`
-	} `yaml:"pgx"`
+	} `yaml:"db"`
 }
 
 func ReadConfig(service, env string) (*AppConfig, error) {

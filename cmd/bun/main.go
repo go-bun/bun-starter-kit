@@ -47,13 +47,14 @@ var serverCommand = &cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-		if err := app.Start(c.Context, "api", c.String("env")); err != nil {
+		myapp, err := app.Start(c.Context, "api", c.String("env"))
+		if err != nil {
 			return err
 		}
-		defer app.Stop()
+		defer myapp.Stop()
 
 		var handler http.Handler
-		handler = app.Router()
+		handler = myapp.Router()
 		handler = httputil.ExitOnPanicHandler{Next: handler}
 
 		srv := &http.Server{
@@ -84,8 +85,8 @@ var dbCommand = &cli.Command{
 			Name:  "init",
 			Usage: "create migration tables",
 			Action: func(c *cli.Context) error {
-				migrator, stop := migrator(c)
-				defer stop()
+				app, migrator := migrator(c)
+				defer app.Stop()
 
 				return migrator.Init(c.Context, app.DB())
 			},
@@ -94,8 +95,8 @@ var dbCommand = &cli.Command{
 			Name:  "migrate",
 			Usage: "migrate database",
 			Action: func(c *cli.Context) error {
-				migrator, stop := migrator(c)
-				defer stop()
+				app, migrator := migrator(c)
+				defer app.Stop()
 
 				return migrator.Migrate(c.Context, app.DB())
 			},
@@ -104,8 +105,8 @@ var dbCommand = &cli.Command{
 			Name:  "rollback",
 			Usage: "rollback the last migration group",
 			Action: func(c *cli.Context) error {
-				migrator, stop := migrator(c)
-				defer stop()
+				app, migrator := migrator(c)
+				defer app.Stop()
 
 				return migrator.Rollback(c.Context, app.DB())
 			},
@@ -114,8 +115,8 @@ var dbCommand = &cli.Command{
 			Name:  "unlock",
 			Usage: "unlock migrations",
 			Action: func(c *cli.Context) error {
-				migrator, stop := migrator(c)
-				defer stop()
+				app, migrator := migrator(c)
+				defer app.Stop()
 
 				return migrator.Unlock(c.Context, app.DB())
 			},
@@ -124,8 +125,8 @@ var dbCommand = &cli.Command{
 			Name:  "create_go",
 			Usage: "create a Go migration",
 			Action: func(c *cli.Context) error {
-				migrator, stop := migrator(c)
-				defer stop()
+				app, migrator := migrator(c)
+				defer app.Stop()
 
 				return migrator.CreateGo(c.Context, app.DB(), c.Args().Get(0))
 			},
@@ -134,8 +135,8 @@ var dbCommand = &cli.Command{
 			Name:  "create_sql",
 			Usage: "create a SQL migration",
 			Action: func(c *cli.Context) error {
-				migrator, stop := migrator(c)
-				defer stop()
+				app, migrator := migrator(c)
+				defer app.Stop()
 
 				return migrator.CreateSQL(c.Context, app.DB(), c.Args().Get(0))
 			},
@@ -143,11 +144,12 @@ var dbCommand = &cli.Command{
 	},
 }
 
-func migrator(c *cli.Context) (*migrate.Migrator, func()) {
-	if err := app.Start(c.Context, "api", c.String("env")); err != nil {
+func migrator(c *cli.Context) (*app.App, *migrate.Migrator) {
+	app, err := app.Start(c.Context, "api", c.String("env"))
+	if err != nil {
 		log.Fatal(err)
 	}
-	return migrations.Migrator, app.Stop
+	return app, migrations.Migrator
 }
 
 func isServerClosed(err error) bool {

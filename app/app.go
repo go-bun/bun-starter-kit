@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"database/sql"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -11,10 +12,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/dialect/sqlitedialect"
 	"github.com/uptrace/bun/extra/bundebug"
 	"github.com/vmihailenco/treemux"
 )
@@ -44,19 +44,22 @@ func New(ctx context.Context, cfg *AppConfig) *App {
 	return app
 }
 
-func Start(ctx context.Context, service, envName string) error {
+func Start(ctx context.Context, service, envName string) (*App, error) {
 	cfg, err := ReadConfig(service, envName)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	return StartConfig(ctx, cfg)
 }
 
-func StartConfig(ctx context.Context, cfg *AppConfig) error {
+func StartConfig(ctx context.Context, cfg *AppConfig) (*App, error) {
 	rand.Seed(time.Now().UnixNano())
 
 	app := New(ctx, cfg)
-	return onStart.Run(ctx, app)
+	if err := onStart.Run(ctx, app); err != nil {
+		return nil, err
+	}
+	return app, nil
 }
 
 func (app *App) Stop() {
@@ -99,16 +102,12 @@ func (app *App) APIRouter() *treemux.Group {
 
 func (app *App) DB() *bun.DB {
 	app.dbOnce.Do(func() {
-		config, err := pgx.ParseConfig(app.cfg.PGX.DSN)
+		sqldb, err := sql.Open("sqlite3", app.cfg.DB.DSN)
 		if err != nil {
 			panic(err)
 		}
 
-		config.PreferSimpleProtocol = true
-		sqldb := stdlib.OpenDB(*config)
-
-		db := bun.Open(sqldb, pgdialect.New())
-		// db.AddQueryHook(pgotel.TracingHook{})
+		db := bun.Open(sqldb, sqlitedialect.New())
 		if app.IsDebug() {
 			db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose()))
 		}

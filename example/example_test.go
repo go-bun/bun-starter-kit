@@ -38,7 +38,7 @@ func TestOrgs(t *testing.T) {
 	err := app.DB().NewSelect().
 		Model(&orgs).
 		Relation("Owner").
-		OrderExpr("id ASC").
+		OrderExpr("org.id ASC").
 		Scan(ctx)
 	require.NoError(t, err)
 	require.Len(t, orgs, 2)
