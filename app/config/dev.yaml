@@ -1,4 +1,4 @@
 debug: true
 
 db:
-  dsn: file:dev.db?cache=shared&mode=memory
+  dsn: file:test.s3db?cache=shared

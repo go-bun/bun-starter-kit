@@ -2,6 +2,7 @@ package example_test
 
 import (
 	"context"
+	"fmt"
 	"net/http/httptest"
 	"os"
 	"testing"
@@ -82,10 +83,13 @@ type App struct {
 }
 
 func startTestApp(t *testing.T) App {
+	fmt.Println(os.Getwd())
+	ctx := context.Background()
 	cfg, err := app.ReadConfig("example_test", "test")
 	require.NoError(t, err)
 
-	myapp := app.New(context.Background(), cfg)
+	myapp, err := app.StartConfig(ctx, cfg)
+	require.NoError(t, err)
 
 	db := myapp.DB()
 	db.RegisterModel((*example.User)(nil), (*example.Org)(nil))

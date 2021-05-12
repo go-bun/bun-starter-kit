@@ -112,6 +112,10 @@ func (app *App) DB() *bun.DB {
 			db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose()))
 		}
 
+		OnStop("db.Close", func(ctx context.Context, app *App) error {
+			return db.Close()
+		})
+
 		app.db = db
 	})
 	return app.db
