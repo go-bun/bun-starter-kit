@@ -1,4 +1,4 @@
-package app
+package bunapp
 
 import (
 	"net/http"
@@ -12,8 +12,8 @@ import (
 
 func (app *App) initRouter() {
 	opts := []treemux.Option{
-		treemux.WithMiddleware(treemuxgzip.NewMiddleware()),
 		treemux.WithMiddleware(treemuxotel.NewMiddleware()),
+		treemux.WithMiddleware(treemuxgzip.NewMiddleware()),
 	}
 	if app.IsDebug() {
 		opts = append(opts, treemux.WithMiddleware(reqlog.NewMiddleware()))

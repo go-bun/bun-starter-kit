@@ -22,8 +22,8 @@ Make sure you have correct information in `app/config/test.yaml` and then run mi
 must exist before running):
 
 ```shell
-go run cmd/bun/main.go -env=test init
-go run cmd/bun/main.go -env=test migrate
+go run cmd/bun/main.go -env=test db init
+go run cmd/bun/main.go -env=test db migrate
 ```
 
 Then run the tests in [example](example) package:

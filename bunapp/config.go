@@ -1,4 +1,4 @@
-package app
+package bunapp
 
 import (
 	"fmt"

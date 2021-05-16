@@ -5,12 +5,12 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/uptrace/bun-starter-kit/app"
+	"github.com/uptrace/bun-starter-kit/bunapp"
 	"github.com/vmihailenco/treemux"
 )
 
 func init() {
-	app.OnStart("example.init", func(ctx context.Context, app *app.App) error {
+	bunapp.OnStart("example.init", func(ctx context.Context, app *bunapp.App) error {
 		welcomeHandler := NewWelcomeHandler(app)
 
 		app.Router().GET("/", welcomeHandler.Welcome)
@@ -20,11 +20,11 @@ func init() {
 }
 
 type WelcomeHandler struct {
-	app *app.App
+	app *bunapp.App
 	tpl *template.Template
 }
 
-func NewWelcomeHandler(app *app.App) *WelcomeHandler {
+func NewWelcomeHandler(app *bunapp.App) *WelcomeHandler {
 	tpl, err := template.New("").ParseGlob(app.Path("example", "templates", "*.html"))
 	if err != nil {
 		panic(err)

@@ -1,4 +1,4 @@
-package app
+package bunapp
 
 import (
 	"context"
@@ -13,21 +13,6 @@ var onStart appHooks
 
 func OnStart(name string, fn HookFunc) {
 	onStart.Add(newHook(name, fn))
-}
-
-//------------------------------------------------------------------------------
-
-var (
-	onStop      appHooks
-	onAfterStop appHooks
-)
-
-func OnStop(name string, fn HookFunc) {
-	onStop.Add(newHook(name, fn))
-}
-
-func OnAfterStop(name string, fn HookFunc) {
-	onAfterStop.Add(newHook(name, fn))
 }
 
 //------------------------------------------------------------------------------

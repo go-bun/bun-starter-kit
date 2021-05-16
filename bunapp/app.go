@@ -1,4 +1,4 @@
-package app
+package bunapp
 
 import (
 	"context"
@@ -16,8 +16,20 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 	"github.com/uptrace/bun/extra/bundebug"
+	"github.com/urfave/cli/v2"
 	"github.com/vmihailenco/treemux"
 )
+
+type appCtxKey struct{}
+
+func AppFromContext(ctx context.Context) *App {
+	return ctx.Value(appCtxKey{}).(*App)
+}
+
+func ContextWithApp(ctx context.Context, app *App) context.Context {
+	ctx = context.WithValue(ctx, appCtxKey{}, app)
+	return ctx
+}
 
 type App struct {
 	ctx context.Context
@@ -25,6 +37,9 @@ type App struct {
 
 	stopping uint32
 	stopCh   chan struct{}
+
+	onStop      appHooks
+	onAfterStop appHooks
 
 	router    *treemux.Router
 	apiRouter *treemux.Group
@@ -36,35 +51,47 @@ type App struct {
 
 func New(ctx context.Context, cfg *AppConfig) *App {
 	app := &App{
-		ctx:    ctx,
 		cfg:    cfg,
 		stopCh: make(chan struct{}),
 	}
+	app.ctx = ContextWithApp(ctx, app)
 	app.initRouter()
 	return app
 }
 
-func Start(ctx context.Context, service, envName string) (*App, error) {
+func StartCLI(c *cli.Context) (context.Context, *App, error) {
+	return Start(c.Context, c.Command.Name, c.String("env"))
+}
+
+func Start(ctx context.Context, service, envName string) (context.Context, *App, error) {
 	cfg, err := ReadConfig(service, envName)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	return StartConfig(ctx, cfg)
 }
 
-func StartConfig(ctx context.Context, cfg *AppConfig) (*App, error) {
+func StartConfig(ctx context.Context, cfg *AppConfig) (context.Context, *App, error) {
 	rand.Seed(time.Now().UnixNano())
 
 	app := New(ctx, cfg)
 	if err := onStart.Run(ctx, app); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return app, nil
+	return app.ctx, app, nil
 }
 
 func (app *App) Stop() {
-	_ = onStop.Run(app.ctx, app)
-	_ = onAfterStop.Run(app.ctx, app)
+	_ = app.onStop.Run(app.ctx, app)
+	_ = app.onAfterStop.Run(app.ctx, app)
+}
+
+func (app *App) OnStop(name string, fn HookFunc) {
+	app.onStop.Add(newHook(name, fn))
+}
+
+func (app *App) OnAfterStop(name string, fn HookFunc) {
+	app.onAfterStop.Add(newHook(name, fn))
 }
 
 func (app *App) Context() context.Context {
@@ -112,7 +139,7 @@ func (app *App) DB() *bun.DB {
 			db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose()))
 		}
 
-		OnStop("db.Close", func(ctx context.Context, app *App) error {
+		app.OnStop("db.Close", func(ctx context.Context, _ *App) error {
 			return db.Close()
 		})
 

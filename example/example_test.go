@@ -2,13 +2,12 @@ package example_test
 
 import (
 	"context"
-	"fmt"
 	"net/http/httptest"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/uptrace/bun-starter-kit/app"
+	"github.com/uptrace/bun-starter-kit/bunapp"
 	"github.com/uptrace/bun-starter-kit/example"
 	"github.com/uptrace/bun-starter-kit/testbed"
 	"github.com/uptrace/bun/fixture"
@@ -78,20 +77,15 @@ func TestHandler(t *testing.T) {
 }
 
 type App struct {
-	*app.App
+	*bunapp.App
 	fixture *fixture.Loader
 }
 
 func startTestApp(t *testing.T) App {
-	fmt.Println(os.Getwd())
-	ctx := context.Background()
-	cfg, err := app.ReadConfig("example_test", "test")
+	ctx, app, err := bunapp.Start(context.TODO(), "test", "test")
 	require.NoError(t, err)
 
-	myapp, err := app.StartConfig(ctx, cfg)
-	require.NoError(t, err)
-
-	db := myapp.DB()
+	db := app.DB()
 	db.RegisterModel((*example.User)(nil), (*example.Org)(nil))
 
 	loader := fixture.NewLoader(db, fixture.WithDropTables())
@@ -99,7 +93,7 @@ func startTestApp(t *testing.T) App {
 	require.NoError(t, err)
 
 	return App{
-		App:     myapp,
+		App:     app,
 		fixture: loader,
 	}
 }

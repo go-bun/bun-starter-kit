@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/uptrace/bun-starter-kit/app"
 	"github.com/uptrace/bun-starter-kit/cmd/bun/migrations"
 	_ "github.com/uptrace/bun-starter-kit/example"
 	"github.com/uptrace/bun-starter-kit/httputil"
@@ -28,7 +27,7 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			serverCommand,
-			dbCommand,
+			newDBCommand(migrations.Migrator),
 		},
 	}
 	if err := app.Run(os.Args); err != nil {
@@ -77,89 +76,83 @@ var serverCommand = &cli.Command{
 	},
 }
 
-var dbCommand = &cli.Command{
-	Name:  "db",
-	Usage: "manage database migrations",
-	Subcommands: []*cli.Command{
-		{
-			Name:  "init",
-			Usage: "create migration tables",
-			Action: func(c *cli.Context) error {
-				app, migrator := migrator(c)
-				defer app.Stop()
+func newDBCommand(migrator *migrate.Migrator) *cli.Command {
+	return &cli.Command{
+		Name:  "db",
+		Usage: "manage database migrations",
+		Subcommands: []*cli.Command{
+			{
+				Name:  "init",
+				Usage: "create migration tables",
+				Action: func(c *cli.Context) error {
+					app := startApp(c)
+					defer app.Stop()
 
-				return migrator.Init(c.Context, app.DB())
+					return migrator.Init(c.Context, app.DB())
+				},
+			},
+			{
+				Name:  "migrate",
+				Usage: "migrate database",
+				Action: func(c *cli.Context) error {
+					app := startApp(c)
+					defer app.Stop()
+
+					return migrator.Migrate(c.Context, app.DB())
+				},
+			},
+			{
+				Name:  "rollback",
+				Usage: "rollback the last migration group",
+				Action: func(c *cli.Context) error {
+					app := startApp(c)
+					defer app.Stop()
+
+					return migrator.Rollback(c.Context, app.DB())
+				},
+			},
+			{
+				Name:  "lock",
+				Usage: "lock migrations",
+				Action: func(c *cli.Context) error {
+					app := startApp(c)
+					defer app.Stop()
+
+					return migrator.Lock(c.Context, app.DB())
+				},
+			},
+			{
+				Name:  "unlock",
+				Usage: "unlock migrations",
+				Action: func(c *cli.Context) error {
+					app := startApp(c)
+					defer app.Stop()
+
+					return migrator.Unlock(c.Context, app.DB())
+				},
+			},
+			{
+				Name:  "create_go",
+				Usage: "create Go migration",
+				Action: func(c *cli.Context) error {
+					app := startApp(c)
+					defer app.Stop()
+
+					return migrator.CreateGo(c.Context, app.DB(), c.Args().Get(0))
+				},
+			},
+			{
+				Name:  "create_sql",
+				Usage: "create SQL migration",
+				Action: func(c *cli.Context) error {
+					app := startApp(c)
+					defer app.Stop()
+
+					return migrator.CreateSQL(c.Context, app.DB(), c.Args().Get(0))
+				},
 			},
 		},
-		{
-			Name:  "migrate",
-			Usage: "migrate database",
-			Action: func(c *cli.Context) error {
-				app, migrator := migrator(c)
-				defer app.Stop()
-
-				return migrator.Migrate(c.Context, app.DB())
-			},
-		},
-		{
-			Name:  "rollback",
-			Usage: "rollback the last migration group",
-			Action: func(c *cli.Context) error {
-				app, migrator := migrator(c)
-				defer app.Stop()
-
-				return migrator.Rollback(c.Context, app.DB())
-			},
-		},
-		{
-			Name:  "lock",
-			Usage: "lock migrations",
-			Action: func(c *cli.Context) error {
-				app, migrator := migrator(c)
-				defer app.Stop()
-
-				return migrator.Lock(c.Context, app.DB())
-			},
-		},
-		{
-			Name:  "unlock",
-			Usage: "unlock migrations",
-			Action: func(c *cli.Context) error {
-				app, migrator := migrator(c)
-				defer app.Stop()
-
-				return migrator.Unlock(c.Context, app.DB())
-			},
-		},
-		{
-			Name:  "create_go",
-			Usage: "create Go migration",
-			Action: func(c *cli.Context) error {
-				app, migrator := migrator(c)
-				defer app.Stop()
-
-				return migrator.CreateGo(c.Context, app.DB(), c.Args().Get(0))
-			},
-		},
-		{
-			Name:  "create_sql",
-			Usage: "create SQL migration",
-			Action: func(c *cli.Context) error {
-				app, migrator := migrator(c)
-				defer app.Stop()
-
-				return migrator.CreateSQL(c.Context, app.DB(), c.Args().Get(0))
-			},
-		},
-	},
-}
-
-func migrator(c *cli.Context) (*app.App, *migrate.Migrator) {
-	app, err := app.Start(c.Context, "api", c.String("env"))
-	if err != nil {
-		log.Fatal(err)
 	}
-	return app, migrations.Migrator
 }
 
 func isServerClosed(err error) bool {
