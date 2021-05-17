@@ -10,6 +10,9 @@ Bun starter kit consists of:
 - CLI to run HTTP server and migrations, for example, `go run cmd/bun/*.go db help`.
 - [example](example) package that shows how to load fixtures and test handlers.
 
+You can also check [bun-realworld-app](https://github.com/go-bun/bun-realworld-app) which is a JSON
+API built with Bun starter kit.
+
 ## Quickstart
 
 To start using this kit, clone the repo:

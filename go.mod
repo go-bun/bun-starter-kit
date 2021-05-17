@@ -5,10 +5,10 @@ go 1.16
 require (
 	github.com/mattn/go-sqlite3 v1.14.7
 	github.com/stretchr/testify v1.7.0
-	github.com/uptrace/bun v0.0.0-20210517062146-7ec5d8bf3175
-	github.com/uptrace/bun/dialect/sqlitedialect v0.0.0-20210517062146-7ec5d8bf3175
-	github.com/uptrace/bun/extra/bundebug v0.0.0-20210517062146-7ec5d8bf3175
-	github.com/uptrace/bun/fixture v0.0.0-20210517062146-7ec5d8bf3175
+	github.com/uptrace/bun v0.0.0-20210517092851-38dfb7e7135f
+	github.com/uptrace/bun/dialect/sqlitedialect v0.0.0-20210517092851-38dfb7e7135f
+	github.com/uptrace/bun/extra/bundebug v0.0.0-20210517092851-38dfb7e7135f
+	github.com/uptrace/bun/fixture v0.0.0-20210517092851-38dfb7e7135f
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/vmihailenco/treemux v0.6.1
 	github.com/vmihailenco/treemux/extra/reqlog v0.6.1
