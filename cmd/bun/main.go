@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/uptrace/bun-starter-kit/bunapp"
 	"github.com/uptrace/bun-starter-kit/cmd/bun/migrations"
 	_ "github.com/uptrace/bun-starter-kit/example"
 	"github.com/uptrace/bun-starter-kit/httputil"
@@ -27,7 +28,7 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			serverCommand,
-			newDBCommand(migrations.Migrator),
+			newDBCommand(migrations.Migrations),
 		},
 	}
 	if err := app.Run(os.Args); err != nil {
@@ -46,14 +47,14 @@ var serverCommand = &cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-		myapp, err := app.Start(c.Context, "api", c.String("env"))
+		ctx, app, err := bunapp.Start(c.Context, "api", c.String("env"))
 		if err != nil {
 			return err
 		}
-		defer myapp.Stop()
+		defer app.Stop()
 
 		var handler http.Handler
-		handler = myapp.Router()
+		handler = app.Router()
 		handler = httputil.ExitOnPanicHandler{Next: handler}
 
 		srv := &http.Server{
@@ -70,13 +71,13 @@ var serverCommand = &cli.Command{
 		}()
 
 		fmt.Printf("listening on %s\n", srv.Addr)
-		fmt.Println(app.WaitExitSignal())
+		fmt.Println(bunapp.WaitExitSignal())
 
-		return srv.Shutdown(c.Context)
+		return srv.Shutdown(ctx)
 	},
 }
 
-func newDBCommand(migrator *migrate.Migrator) *cli.Command {
+func newDBCommand(migrations *migrate.Migrations) *cli.Command {
 	return &cli.Command{
 		Name:  "db",
 		Usage: "manage database migrations",
@@ -85,70 +86,91 @@ func newDBCommand(migrator *migrate.Migrator) *cli.Command {
 				Name:  "init",
 				Usage: "create migration tables",
 				Action: func(c *cli.Context) error {
-					app := startApp(c)
+					ctx, app, err := bunapp.StartCLI(c)
+					if err != nil {
+						return err
+					}
 					defer app.Stop()
 
-					return migrator.Init(c.Context, app.DB())
+					return migrations.Init(ctx, app.DB())
 				},
 			},
 			{
 				Name:  "migrate",
 				Usage: "migrate database",
 				Action: func(c *cli.Context) error {
-					app := startApp(c)
+					ctx, app, err := bunapp.StartCLI(c)
+					if err != nil {
+						return err
+					}
 					defer app.Stop()
 
-					return migrator.Migrate(c.Context, app.DB())
+					return migrations.Migrate(ctx, app.DB())
 				},
 			},
 			{
 				Name:  "rollback",
 				Usage: "rollback the last migration group",
 				Action: func(c *cli.Context) error {
-					app := startApp(c)
+					ctx, app, err := bunapp.StartCLI(c)
+					if err != nil {
+						return err
+					}
 					defer app.Stop()
 
-					return migrator.Rollback(c.Context, app.DB())
+					return migrations.Rollback(ctx, app.DB())
 				},
 			},
 			{
 				Name:  "lock",
 				Usage: "lock migrations",
 				Action: func(c *cli.Context) error {
-					app := startApp(c)
+					ctx, app, err := bunapp.StartCLI(c)
+					if err != nil {
+						return err
+					}
 					defer app.Stop()
 
-					return migrator.Lock(c.Context, app.DB())
+					return migrations.Lock(ctx, app.DB())
 				},
 			},
 			{
 				Name:  "unlock",
 				Usage: "unlock migrations",
 				Action: func(c *cli.Context) error {
-					app := startApp(c)
+					ctx, app, err := bunapp.StartCLI(c)
+					if err != nil {
+						return err
+					}
 					defer app.Stop()
 
-					return migrator.Unlock(c.Context, app.DB())
+					return migrations.Unlock(ctx, app.DB())
 				},
 			},
 			{
 				Name:  "create_go",
 				Usage: "create Go migration",
 				Action: func(c *cli.Context) error {
-					app := startApp(c)
+					ctx, app, err := bunapp.StartCLI(c)
+					if err != nil {
+						return err
+					}
 					defer app.Stop()
 
-					return migrator.CreateGo(c.Context, app.DB(), c.Args().Get(0))
+					return migrations.CreateGo(ctx, app.DB(), c.Args().Get(0))
 				},
 			},
 			{
 				Name:  "create_sql",
 				Usage: "create SQL migration",
 				Action: func(c *cli.Context) error {
-					app := startApp(c)
+					ctx, app, err := bunapp.StartCLI(c)
+					if err != nil {
+						return err
+					}
 					defer app.Stop()
 
-					return migrator.CreateSQL(c.Context, app.DB(), c.Args().Get(0))
+					return migrations.CreateSQL(ctx, app.DB(), c.Args().Get(0))
 				},
 			},
 		},

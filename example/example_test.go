@@ -88,7 +88,7 @@ func startTestApp(t *testing.T) App {
 	db := app.DB()
 	db.RegisterModel((*example.User)(nil), (*example.Org)(nil))
 
-	loader := fixture.NewLoader(db, fixture.WithDropTables())
+	loader := fixture.NewLoader(db, fixture.WithRecreateTables())
 	err = loader.Load(ctx, os.DirFS("testdata"), "fixture.yaml")
 	require.NoError(t, err)
 
