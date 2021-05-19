@@ -42,7 +42,7 @@ var serverCommand = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "addr",
-			Value: ":8000",
+			Value: "localhost:8000",
 			Usage: "serve address",
 		},
 	},
@@ -70,7 +70,7 @@ var serverCommand = &cli.Command{
 			}
 		}()
 
-		fmt.Printf("listening on %s\n", srv.Addr)
+		fmt.Printf("listening on http://%s\n", srv.Addr)
 		fmt.Println(bunapp.WaitExitSignal())
 
 		return srv.Shutdown(ctx)

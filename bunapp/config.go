@@ -60,8 +60,7 @@ func findAppDir(env string) (string, error) {
 
 	for i := 0; i < 10; i++ {
 		configPath := configPath(dir, env)
-		_, err := os.Stat(configPath)
-		if err == nil {
+		if _, err := os.Stat(configPath); err == nil {
 			return dir, nil
 		}
 

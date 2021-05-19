@@ -2,43 +2,25 @@ package example
 
 import (
 	"context"
-	"html/template"
-	"net/http"
 
 	"github.com/uptrace/bun-starter-kit/bunapp"
-	"github.com/vmihailenco/treemux"
 )
 
 func init() {
 	bunapp.OnStart("example.init", func(ctx context.Context, app *bunapp.App) error {
-		welcomeHandler := NewWelcomeHandler(app)
+		router := app.Router()
+		api := app.APIRouter()
 
-		app.Router().GET("/", welcomeHandler.Welcome)
+		welcomeHandler := NewWelcomeHandler(app)
+		userHandler := NewUserHandler(app)
+		orgHandler := NewOrgHandler(app)
+
+		router.GET("/", welcomeHandler.Welcome)
+		router.GET("/hello", welcomeHandler.Hello)
+
+		api.GET("/users", userHandler.List)
+		api.GET("/orgs", orgHandler.List)
 
 		return nil
 	})
-}
-
-type WelcomeHandler struct {
-	app *bunapp.App
-	tpl *template.Template
-}
-
-func NewWelcomeHandler(app *bunapp.App) *WelcomeHandler {
-	tpl, err := template.New("").ParseGlob(app.Path("example", "templates", "*.html"))
-	if err != nil {
-		panic(err)
-	}
-
-	return &WelcomeHandler{
-		app: app,
-		tpl: tpl,
-	}
-}
-
-func (h *WelcomeHandler) Welcome(w http.ResponseWriter, req treemux.Request) error {
-	if err := h.tpl.ExecuteTemplate(w, "welcome.html", nil); err != nil {
-		return err
-	}
-	return nil
 }

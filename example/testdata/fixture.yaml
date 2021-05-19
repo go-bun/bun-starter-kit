@@ -7,9 +7,9 @@
 
 - model: Org
   rows:
-    - _id: my_org
+    - _id: my
       name: My Org
-      owner_id: "{{ $.User.test.ID }}"
-    - _id: another_org
+      owner_id: '{{ $.User.test.ID }}'
+    - _id: another
       name: Another Org
-      owner_id: "{{ $.User.another.ID }}"
+      owner_id: '{{ $.User.another.ID }}'
