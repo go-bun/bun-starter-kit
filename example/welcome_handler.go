@@ -1,6 +1,7 @@
 package example
 
 import (
+	"embed"
 	"net/http"
 	"text/template"
 
@@ -8,13 +9,16 @@ import (
 	"github.com/vmihailenco/treemux"
 )
 
+//go:embed templates/*
+var templates embed.FS
+
 type WelcomeHandler struct {
 	app *bunapp.App
 	tpl *template.Template
 }
 
 func NewWelcomeHandler(app *bunapp.App) *WelcomeHandler {
-	tpl, err := template.New("").ParseGlob(app.Path("example", "templates", "*.html"))
+	tpl, err := template.New("").ParseFS(templates, "templates/*.html")
 	if err != nil {
 		panic(err)
 	}
