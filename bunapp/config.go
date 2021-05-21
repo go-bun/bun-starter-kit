@@ -1,11 +1,31 @@
 package bunapp
 
 import (
+	"embed"
 	"io/fs"
 	"path"
+	"sync"
 
 	"gopkg.in/yaml.v3"
 )
+
+var (
+	//go:embed embed
+	embedFS      embed.FS
+	unwrapFSOnce sync.Once
+	unwrappedFS  fs.FS
+)
+
+func FS() fs.FS {
+	unwrapFSOnce.Do(func() {
+		fsys, err := fs.Sub(embedFS, "embed")
+		if err != nil {
+			panic(err)
+		}
+		unwrappedFS = fsys
+	})
+	return unwrappedFS
+}
 
 type AppConfig struct {
 	Service string

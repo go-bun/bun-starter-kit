@@ -3,8 +3,6 @@ package bunapp
 import (
 	"context"
 	"database/sql"
-	"embed"
-	"io/fs"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -20,17 +18,6 @@ import (
 	"github.com/urfave/cli/v2"
 	"github.com/vmihailenco/treemux"
 )
-
-//go:embed embed
-var embedFS embed.FS
-
-func FS() fs.FS {
-	fsys, err := fs.Sub(embedFS, "embed")
-	if err != nil {
-		panic(err)
-	}
-	return fsys
-}
 
 type appCtxKey struct{}
 
