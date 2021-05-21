@@ -3,10 +3,11 @@ package bunapp
 import (
 	"context"
 	"database/sql"
+	"embed"
+	"io/fs"
 	"math/rand"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"sync"
 	"sync/atomic"
 	"syscall"
@@ -19,6 +20,17 @@ import (
 	"github.com/urfave/cli/v2"
 	"github.com/vmihailenco/treemux"
 )
+
+//go:embed embed
+var embedFS embed.FS
+
+func FS() fs.FS {
+	fsys, err := fs.Sub(embedFS, "embed")
+	if err != nil {
+		panic(err)
+	}
+	return fsys
+}
 
 type appCtxKey struct{}
 
@@ -64,7 +76,7 @@ func StartCLI(c *cli.Context) (context.Context, *App, error) {
 }
 
 func Start(ctx context.Context, service, envName string) (context.Context, *App, error) {
-	cfg, err := ReadConfig(service, envName)
+	cfg, err := ReadConfig(FS(), service, envName)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -100,11 +112,6 @@ func (app *App) Context() context.Context {
 
 func (app *App) Config() *AppConfig {
 	return app.cfg
-}
-
-func (app *App) Path(ss ...string) string {
-	ss = append([]string{app.cfg.AppDir}, ss...)
-	return filepath.Join(ss...)
 }
 
 func (app *App) Running() bool {

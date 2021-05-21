@@ -2,7 +2,6 @@ package example_test
 
 import (
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -36,7 +35,7 @@ func loadFixture(t *testing.T, app *bunapp.App) *dbfixture.Fixture {
 	db.RegisterModel((*example.User)(nil), (*example.Org)(nil))
 
 	fixture := dbfixture.New(db, dbfixture.WithRecreateTables())
-	err := fixture.Load(app.Context(), os.DirFS("testdata"), "fixture.yaml")
+	err := fixture.Load(app.Context(), bunapp.FS(), "fixture/fixture.yaml")
 	require.NoError(t, err)
 
 	return fixture
