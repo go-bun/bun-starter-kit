@@ -173,6 +173,32 @@ func newDBCommand(migrations *migrate.Migrations) *cli.Command {
 					return migrations.CreateSQL(ctx, app.DB(), c.Args().Get(0))
 				},
 			},
+			{
+				Name:  "status",
+				Usage: "print migrations status",
+				Action: func(c *cli.Context) error {
+					ctx, app, err := bunapp.StartCLI(c)
+					if err != nil {
+						return err
+					}
+					defer app.Stop()
+
+					return migrations.Status(ctx, app.DB())
+				},
+			},
+			{
+				Name:  "mark_completed",
+				Usage: "mark migrations as completed without actually running them",
+				Action: func(c *cli.Context) error {
+					ctx, app, err := bunapp.StartCLI(c)
+					if err != nil {
+						return err
+					}
+					defer app.Stop()
+
+					return migrations.MarkCompleted(ctx, app.DB())
+				},
+			},
 		},
 	}
 }
