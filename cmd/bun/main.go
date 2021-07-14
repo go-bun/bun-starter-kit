@@ -228,20 +228,20 @@ func newDBCommand(migrations *migrate.Migrations) *cli.Command {
 
 					migrator := migrate.NewMigrator(app.DB(), migrations)
 
-					status, err := migrator.Status(ctx)
+					ms, err := migrator.MigrationsWithStatus(ctx)
 					if err != nil {
 						return err
 					}
+					fmt.Printf("migrations: %s\n", ms)
+					fmt.Printf("unapplied migrations: %s\n", ms.Unapplied())
+					fmt.Printf("last migration group: %s\n", ms.LastGroup())
 
-					fmt.Printf("migrations: %s\n", status.Migrations)
-					fmt.Printf("new migrations: %s\n", status.NewMigrations)
-					fmt.Printf("last group: %s\n", status.LastGroup)
 					return nil
 				},
 			},
 			{
-				Name:  "mark_completed",
-				Usage: "mark migrations as completed without actually running them",
+				Name:  "mark_applied",
+				Usage: "mark migrations as applied without actually running them",
 				Action: func(c *cli.Context) error {
 					ctx, app, err := bunapp.StartCLI(c)
 					if err != nil {
@@ -251,17 +251,17 @@ func newDBCommand(migrations *migrate.Migrations) *cli.Command {
 
 					migrator := migrate.NewMigrator(app.DB(), migrations)
 
-					group, err := migrator.MarkCompleted(ctx)
+					group, err := migrator.Migrate(ctx, migrate.WithNopMigration())
 					if err != nil {
 						return err
 					}
 
 					if group.ID == 0 {
-						fmt.Printf("there are no new migrations to mark as completed\n")
+						fmt.Printf("there are no new migrations to mark as applied\n")
 						return nil
 					}
 
-					fmt.Printf("marked as completed %s\n", group)
+					fmt.Printf("marked as applied %s\n", group)
 					return nil
 				},
 			},
