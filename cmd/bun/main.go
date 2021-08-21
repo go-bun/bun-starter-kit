@@ -201,7 +201,7 @@ func newDBCommand(migrations *migrate.Migrations) *cli.Command {
 			},
 			{
 				Name:  "create_sql",
-				Usage: "create SQL up and down migrations",
+				Usage: "create up and down SQL migrations",
 				Action: func(c *cli.Context) error {
 					ctx, app, err := bunapp.StartCLI(c)
 					if err != nil {
