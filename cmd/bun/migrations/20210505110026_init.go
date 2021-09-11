@@ -14,6 +14,6 @@ func init() {
 		db.RegisterModel((*example.User)(nil), (*example.Org)(nil))
 
 		fixture := dbfixture.New(db, dbfixture.WithRecreateTables())
-		return fixture.Load(ctx, bunapp.FS(), "fixture/fixture.yaml")
+		return fixture.Load(ctx, bunapp.FS(), "fixture/fixture.yml")
 	}, nil)
 }
