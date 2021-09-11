@@ -6,7 +6,7 @@ import (
 	"text/template"
 
 	"github.com/uptrace/bun-starter-kit/bunapp"
-	"github.com/vmihailenco/treemux"
+	"github.com/uptrace/treemux"
 )
 
 //go:embed templates/*

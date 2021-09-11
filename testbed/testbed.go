@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun-starter-kit/bunapp"
-	"github.com/vmihailenco/treemux"
+	"github.com/uptrace/treemux"
 )
 
 func NewRequest(method, target string, body io.Reader) treemux.Request {

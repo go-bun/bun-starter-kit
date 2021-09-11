@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/uptrace/bun-starter-kit/httputil/httperror"
-	"github.com/vmihailenco/treemux"
-	"github.com/vmihailenco/treemux/extra/reqlog"
-	"github.com/vmihailenco/treemux/extra/treemuxgzip"
-	"github.com/vmihailenco/treemux/extra/treemuxotel"
+	"github.com/uptrace/treemux"
+	"github.com/uptrace/treemux/extra/reqlog"
+	"github.com/uptrace/treemux/extra/treemuxgzip"
+	"github.com/uptrace/treemux/extra/treemuxotel"
 )
 
 func (app *App) initRouter() {

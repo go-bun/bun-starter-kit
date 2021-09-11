@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/uptrace/bun-starter-kit/bunapp"
-	"github.com/vmihailenco/treemux"
+	"github.com/uptrace/treemux"
 )
 
 type UserHandler struct {
