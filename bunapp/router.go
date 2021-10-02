@@ -4,30 +4,30 @@ import (
 	"net/http"
 
 	"github.com/uptrace/bun-starter-kit/httputil/httperror"
-	"github.com/uptrace/treemux"
-	"github.com/uptrace/treemux/extra/reqlog"
-	"github.com/uptrace/treemux/extra/treemuxgzip"
-	"github.com/uptrace/treemux/extra/treemuxotel"
+	"github.com/uptrace/bunrouter"
+	"github.com/uptrace/bunrouter/extra/bunroutergzip"
+	"github.com/uptrace/bunrouter/extra/bunrouterotel"
+	"github.com/uptrace/bunrouter/extra/reqlog"
 )
 
 func (app *App) initRouter() {
-	opts := []treemux.Option{
-		treemux.WithMiddleware(treemuxotel.NewMiddleware()),
-		treemux.WithMiddleware(treemuxgzip.NewMiddleware()),
+	opts := []bunrouter.Option{
+		bunrouter.WithMiddleware(bunrouterotel.NewMiddleware()),
+		bunrouter.WithMiddleware(bunroutergzip.NewMiddleware()),
 	}
 	if app.IsDebug() {
-		opts = append(opts, treemux.WithMiddleware(reqlog.NewMiddleware()))
+		opts = append(opts, bunrouter.WithMiddleware(reqlog.NewMiddleware()))
 	}
-	opts = append(opts, treemux.WithMiddleware(app.errorHandler))
+	opts = append(opts, bunrouter.WithMiddleware(app.errorHandler))
 
-	app.router = treemux.New(opts...)
+	app.router = bunrouter.New(opts...)
 	app.apiRouter = app.router.NewGroup("/api",
-		treemux.WithMiddleware(corsMiddleware),
+		bunrouter.WithMiddleware(corsMiddleware),
 	)
 }
 
-func (app *App) errorHandler(next treemux.HandlerFunc) treemux.HandlerFunc {
-	return func(w http.ResponseWriter, req treemux.Request) error {
+func (app *App) errorHandler(next bunrouter.HandlerFunc) bunrouter.HandlerFunc {
+	return func(w http.ResponseWriter, req bunrouter.Request) error {
 		err := next(w, req)
 		if err == nil {
 			return nil
@@ -37,14 +37,14 @@ func (app *App) errorHandler(next treemux.HandlerFunc) treemux.HandlerFunc {
 		if httpErr.Status != 0 {
 			w.WriteHeader(httpErr.Status)
 		}
-		_ = treemux.JSON(w, httpErr)
+		_ = bunrouter.JSON(w, httpErr)
 
 		return err
 	}
 }
 
-func corsMiddleware(next treemux.HandlerFunc) treemux.HandlerFunc {
-	return func(w http.ResponseWriter, req treemux.Request) error {
+func corsMiddleware(next bunrouter.HandlerFunc) bunrouter.HandlerFunc {
+	return func(w http.ResponseWriter, req bunrouter.Request) error {
 		origin := req.Header.Get("Origin")
 		if origin == "" {
 			return next(w, req)

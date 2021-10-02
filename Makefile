@@ -4,3 +4,7 @@ db_migrate:
 
 test:
 	go test ./...
+
+fmt:
+	gofmt -w -s ./
+	goimports -w  -local github.com/go-bun/bun-starter-kit ./

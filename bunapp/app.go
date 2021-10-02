@@ -15,7 +15,7 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 	"github.com/uptrace/bun/extra/bundebug"
-	"github.com/uptrace/treemux"
+	"github.com/uptrace/bunrouter"
 	"github.com/urfave/cli/v2"
 )
 
@@ -40,8 +40,8 @@ type App struct {
 	onStop      appHooks
 	onAfterStop appHooks
 
-	router    *treemux.Router
-	apiRouter *treemux.Group
+	router    *bunrouter.Router
+	apiRouter *bunrouter.Group
 
 	// lazy init
 	dbOnce sync.Once
@@ -113,11 +113,11 @@ func (app *App) IsDebug() bool {
 	return app.cfg.Debug
 }
 
-func (app *App) Router() *treemux.Router {
+func (app *App) Router() *bunrouter.Router {
 	return app.router
 }
 
-func (app *App) APIRouter() *treemux.Group {
+func (app *App) APIRouter() *bunrouter.Group {
 	return app.apiRouter
 }
 

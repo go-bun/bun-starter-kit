@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/uptrace/bun-starter-kit/bunapp"
-	"github.com/uptrace/treemux"
+	"github.com/uptrace/bunrouter"
 )
 
 type OrgHandler struct {
@@ -17,7 +17,7 @@ func NewOrgHandler(app *bunapp.App) *OrgHandler {
 	}
 }
 
-func (h *OrgHandler) List(w http.ResponseWriter, req treemux.Request) error {
+func (h *OrgHandler) List(w http.ResponseWriter, req bunrouter.Request) error {
 	ctx := req.Context()
 
 	var orgs []Org
@@ -25,7 +25,7 @@ func (h *OrgHandler) List(w http.ResponseWriter, req treemux.Request) error {
 		return err
 	}
 
-	return treemux.JSON(w, treemux.H{
+	return bunrouter.JSON(w, bunrouter.H{
 		"orgs": orgs,
 	})
 }

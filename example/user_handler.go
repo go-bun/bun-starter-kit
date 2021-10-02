@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/uptrace/bun-starter-kit/bunapp"
-	"github.com/uptrace/treemux"
+	"github.com/uptrace/bunrouter"
 )
 
 type UserHandler struct {
@@ -17,7 +17,7 @@ func NewUserHandler(app *bunapp.App) *UserHandler {
 	}
 }
 
-func (h *UserHandler) List(w http.ResponseWriter, req treemux.Request) error {
+func (h *UserHandler) List(w http.ResponseWriter, req bunrouter.Request) error {
 	ctx := req.Context()
 
 	var users []User
@@ -25,7 +25,7 @@ func (h *UserHandler) List(w http.ResponseWriter, req treemux.Request) error {
 		return err
 	}
 
-	return treemux.JSON(w, treemux.H{
+	return bunrouter.JSON(w, bunrouter.H{
 		"users": users,
 	})
 }

@@ -4,7 +4,7 @@
 
 Bun starter kit consists of:
 
-- [treemux](https://github.com/vmihailenco/treemux)
+- [bunrouter](https://github.com/uptrace/bunrouter) is an extremely fast and flexible router.
 - [bun](https://github.com/uptrace/bun)
 - Hooks to initialize the app.
 - CLI to run HTTP server and migrations, for example, `go run cmd/bun/*.go db help`.
