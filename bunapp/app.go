@@ -14,6 +14,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
+	"github.com/uptrace/bun/driver/sqliteshim"
 	"github.com/uptrace/bun/extra/bundebug"
 	"github.com/uptrace/bunrouter"
 	"github.com/urfave/cli/v2"
@@ -123,15 +124,16 @@ func (app *App) APIRouter() *bunrouter.Group {
 
 func (app *App) DB() *bun.DB {
 	app.dbOnce.Do(func() {
-		sqldb, err := sql.Open("sqlite3", app.cfg.DB.DSN)
+		sqldb, err := sql.Open(sqliteshim.ShimName, app.cfg.DB.DSN)
 		if err != nil {
 			panic(err)
 		}
 
 		db := bun.NewDB(sqldb, sqlitedialect.New())
-		if app.IsDebug() {
-			db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose()))
-		}
+		db.AddQueryHook(bundebug.NewQueryHook(
+			bundebug.WithEnabled(false),
+			bundebug.FromEnv(""),
+		))
 
 		app.OnStop("db.Close", func(ctx context.Context, _ *App) error {
 			return db.Close()

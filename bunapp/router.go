@@ -5,24 +5,22 @@ import (
 
 	"github.com/uptrace/bun-starter-kit/httputil/httperror"
 	"github.com/uptrace/bunrouter"
-	"github.com/uptrace/bunrouter/extra/bunroutergzip"
 	"github.com/uptrace/bunrouter/extra/bunrouterotel"
 	"github.com/uptrace/bunrouter/extra/reqlog"
 )
 
 func (app *App) initRouter() {
-	opts := []bunrouter.Option{
+	app.router = bunrouter.New(
 		bunrouter.WithMiddleware(bunrouterotel.NewMiddleware()),
-		bunrouter.WithMiddleware(bunroutergzip.NewMiddleware()),
-	}
-	if app.IsDebug() {
-		opts = append(opts, bunrouter.WithMiddleware(reqlog.NewMiddleware()))
-	}
-	opts = append(opts, bunrouter.WithMiddleware(app.errorHandler))
+		bunrouter.WithMiddleware(reqlog.NewMiddleware(
+			reqlog.WithEnabled(app.IsDebug()),
+			reqlog.FromEnv(""),
+		)),
+	)
 
-	app.router = bunrouter.New(opts...)
 	app.apiRouter = app.router.NewGroup("/api",
 		bunrouter.WithMiddleware(corsMiddleware),
+		bunrouter.WithMiddleware(app.errorHandler),
 	)
 }
 
