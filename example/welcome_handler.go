@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/uptrace/bun-starter-kit/bunapp"
+	"github.com/go-bun/bun-starter-kit/bunapp"
 	"github.com/uptrace/bunrouter"
 )
 
