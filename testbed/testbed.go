@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-bun/bun-starter-kit/bunapp"
 	"github.com/stretchr/testify/require"
-	"github.com/uptrace/bun-starter-kit/bunapp"
 	"github.com/uptrace/bunrouter"
 )
 

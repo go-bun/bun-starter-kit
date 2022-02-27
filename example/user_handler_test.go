@@ -4,10 +4,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-bun/bun-starter-kit/bunapp"
+	"github.com/go-bun/bun-starter-kit/example"
+	"github.com/go-bun/bun-starter-kit/testbed"
 	"github.com/stretchr/testify/require"
-	"github.com/uptrace/bun-starter-kit/bunapp"
-	"github.com/uptrace/bun-starter-kit/example"
-	"github.com/uptrace/bun-starter-kit/testbed"
 	"github.com/uptrace/bun/dbfixture"
 )
 

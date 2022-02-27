@@ -3,7 +3,7 @@ package example
 import (
 	"context"
 
-	"github.com/uptrace/bun-starter-kit/bunapp"
+	"github.com/go-bun/bun-starter-kit/bunapp"
 )
 
 func init() {

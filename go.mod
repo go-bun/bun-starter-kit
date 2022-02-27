@@ -1,4 +1,4 @@
-module github.com/uptrace/bun-starter-kit
+module github.com/go-bun/bun-starter-kit
 
 go 1.16
 

@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/uptrace/bun-starter-kit/bunapp"
-	"github.com/uptrace/bun-starter-kit/cmd/bun/migrations"
-	_ "github.com/uptrace/bun-starter-kit/example"
-	"github.com/uptrace/bun-starter-kit/httputil"
+	"github.com/go-bun/bun-starter-kit/bunapp"
+	"github.com/go-bun/bun-starter-kit/cmd/bun/migrations"
+	_ "github.com/go-bun/bun-starter-kit/example"
+	"github.com/go-bun/bun-starter-kit/httputil"
 	"github.com/uptrace/bun/migrate"
 
 	"github.com/urfave/cli/v2"
