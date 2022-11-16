@@ -28,6 +28,15 @@ func TestUserHandler(t *testing.T) {
 		require.NoError(t, err)
 		require.Contains(t, resp.Body.String(), testUser.Name)
 	}
+
+	{
+		req := testbed.NewRequest("GET", "/api/users/1", nil)
+		resp := httptest.NewRecorder()
+
+		err := handler.Get(resp, req)
+		require.NoError(t, err)
+		require.Contains(t, resp.Body.String(), testUser.Name)
+	}
 }
 
 func loadFixture(t *testing.T, app *bunapp.App) *dbfixture.Fixture {
