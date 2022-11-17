@@ -19,6 +19,7 @@ func init() {
 		router.GET("/hello", welcomeHandler.Hello)
 
 		api.GET("/users", userHandler.List)
+		api.GET("/users/:id", userHandler.Get)
 		api.GET("/orgs", orgHandler.List)
 
 		return nil
