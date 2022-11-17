@@ -3,16 +3,16 @@ package testbed
 import (
 	"context"
 	"io"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/go-bun/bun-starter-kit/bunapp"
 	"github.com/stretchr/testify/require"
-	"github.com/uptrace/bunrouter"
 )
 
-func NewRequest(method, target string, body io.Reader) bunrouter.Request {
-	return bunrouter.NewRequest(httptest.NewRequest(method, target, body))
+func NewRequest(method, target string, body io.Reader) *http.Request {
+	return httptest.NewRequest(method, target, body)
 }
 
 func StartApp(t *testing.T) (context.Context, *bunapp.App) {

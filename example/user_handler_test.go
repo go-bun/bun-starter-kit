@@ -18,13 +18,12 @@ func TestUserHandler(t *testing.T) {
 	fixture := loadFixture(t, app)
 	testUser := fixture.MustRow("User.test").(*example.User)
 
-	handler := example.NewUserHandler(app)
-
 	{
 		req := testbed.NewRequest("GET", "/api/users", nil)
 		resp := httptest.NewRecorder()
 
-		err := handler.List(resp, req)
+		err := app.Router().ServeHTTPError(resp, req)
+
 		require.NoError(t, err)
 		require.Contains(t, resp.Body.String(), testUser.Name)
 	}
@@ -33,7 +32,8 @@ func TestUserHandler(t *testing.T) {
 		req := testbed.NewRequest("GET", "/api/users/1", nil)
 		resp := httptest.NewRecorder()
 
-		err := handler.Get(resp, req)
+		err := app.Router().ServeHTTPError(resp, req)
+
 		require.NoError(t, err)
 		require.Contains(t, resp.Body.String(), testUser.Name)
 	}

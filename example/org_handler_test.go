@@ -17,13 +17,12 @@ func TestOrgHandler(t *testing.T) {
 	testUser := fixture.MustRow("User.test").(*example.User)
 	myOrg := fixture.MustRow("Org.my").(*example.Org)
 
-	handler := example.NewOrgHandler(app)
-
 	{
 		req := testbed.NewRequest("GET", "/api/orgs", nil)
 		resp := httptest.NewRecorder()
 
-		err := handler.List(resp, req)
+		err := app.Router().ServeHTTPError(resp, req)
+
 		require.NoError(t, err)
 		require.Contains(t, resp.Body.String(), testUser.Name)
 		require.Contains(t, resp.Body.String(), myOrg.Name)
