@@ -3,6 +3,7 @@ package bunapp
 import (
 	"embed"
 	"io/fs"
+	"os"
 	"path"
 	"sync"
 
@@ -35,7 +36,8 @@ type AppConfig struct {
 	SecretKey string `yaml:"secret_key"`
 
 	DB struct {
-		DSN string `yaml:"dsn"`
+		DSN    string `yaml:"dsn"`
+		Driver string `yaml:"driver"`
 	} `yaml:"db"`
 }
 
@@ -45,9 +47,10 @@ func ReadConfig(fsys fs.FS, service, env string) (*AppConfig, error) {
 		return nil, err
 	}
 
+	confContent := []byte(os.ExpandEnv(string(b)))
 	cfg := new(AppConfig)
-	if err := yaml.Unmarshal(b, cfg); err != nil {
-		return nil, err
+	if err := yaml.Unmarshal(confContent, cfg); err != nil {
+		panic(err)
 	}
 
 	cfg.Service = service

@@ -2,3 +2,4 @@ debug: true
 
 db:
   dsn: file:dev.s3db?cache=shared
+  driver: postgresql
