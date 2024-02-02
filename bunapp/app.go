@@ -123,27 +123,11 @@ func (app *App) APIRouter() *bunrouter.Group {
 
 func (app *App) DB() *bun.DB {
 	app.dbOnce.Do(func() {
-		/*sqldb, err := sql.Open(sqliteshim.ShimName, app.cfg.DB.DSN)
-		if err != nil {
-			panic(err)
-		}
-
-		db := bun.NewDB(sqldb, sqlitedialect.New())
-		db.AddQueryHook(bundebug.NewQueryHook(
-			bundebug.WithEnabled(false),
-			bundebug.FromEnv(""),
-		))
-
-		app.OnStop("db.Close", func(ctx context.Context, _ *App) error {
-			return db.Close()
-		})
-
-		app.db = db*/
 		switch app.cfg.DB.Driver {
 		case postgresqlDriver:
-			app.db = drivers.PostgresqlDriver(app.cfg.DB.DSN)
+			app.db = drivers.PostgresqlDriver(app.cfg.DB.Postgresql)
 		default:
-			app.db = drivers.SqliteDriver(app.cfg.DB.DSN)
+			app.db = drivers.SqliteDriver(app.cfg.DB.Sqlite)
 			app.OnStop("db.Close", func(ctx context.Context, _ *App) error {
 				return app.db.Close()
 			})

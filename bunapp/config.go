@@ -36,8 +36,9 @@ type AppConfig struct {
 	SecretKey string `yaml:"secret_key"`
 
 	DB struct {
-		DSN    string `yaml:"dsn"`
-		Driver string `yaml:"driver"`
+		Driver     string `yaml:"driver"`
+		Postgresql string `yaml:"postgresql_dns"`
+		Sqlite     string `yaml:"sqlite_dns"`
 	} `yaml:"db"`
 }
 

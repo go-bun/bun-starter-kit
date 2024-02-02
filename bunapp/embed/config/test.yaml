@@ -1,5 +1,6 @@
 debug: true
 
 db:
-  dsn: file:test.s3db?cache=shared
-  driver: postgresql
+  driver: ${BUN_DRIVER}
+  postgresql_dns: postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable
+  sqlite_dns: file:dev.s3db?cache=shared
